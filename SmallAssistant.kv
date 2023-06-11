@@ -1,0 +1,696 @@
+#:import C kivy.utils.get_color_from_hex
+#:import ScrollEffect  kivy.effects.scroll.ScrollEffect
+
+<InvisibleTextInput@TextInput>:
+    font_size: '14dp'
+    background_color: 23, 23, 23, 0
+    foreground_color: C('#ffffff')
+    cursor_color: C('#ffffff')
+    canvas.after:
+        Color:
+            rgba: 23, 23, 23, 0
+        Rectangle:
+            pos: self.pos
+            size: 0, 0
+
+
+<StyledButton@Button>:
+    background_normal: 'textures/unpressed_button.png'
+    background_down: 'textures/pressed_button.png'
+  
+
+#big boi
+<MainLayout>:
+    size: 720, 576
+    canvas:
+        Color:
+            rgb: C('#36393F')
+        Rectangle:
+            pos: self.pos
+            size: self.size
+    Image:
+        source: 'textures/back.png'
+        size: self.texture_size
+        allow_stretch: True
+        keep_ratio: False
+
+    #Upper one
+    FloatLayout:
+        size_hint: 0.9, 0.6
+        pos_hint: {'center_x': .5, "y":0.35}
+        canvas:
+            Color:
+                rgb: C('#40444B')
+            RoundedRectangle:
+                pos: self.pos
+                size: self.size
+                radius: [(10, 10), (10, 10), (10, 10), (10, 10)]
+        Image:
+            id: little_dude_body
+            x: self.parent.x
+            y: self.parent.y + 30
+            width: 400
+            height: 323
+            anim_delay: 0
+            mipmap: True
+            allow_stretch: True
+        Image:
+            id: little_dude_face
+            x: self.parent.x
+            y: self.parent.y + 30
+            width: 400
+            height: 323
+            anim_delay: 0
+            mipmap: True
+            allow_stretch: True
+            keep_ratio: True
+
+    #Upper buttons
+    StackLayout:
+        id: bot_mode_box
+        disabled: False
+        opacity: 1
+        size_hint: 0.9, 0.6
+        pos_hint: {'center_x': .49, "y":0.33}
+        orientation: "tb-rl"
+        spacing: 3
+        BoxLayout:
+            orientation: 'horizontal'
+            size_hint_x: None
+            size_hint_y: None
+            width: "165dp"
+            height: "30dp"
+            Label:
+                text: "Bot mode:"
+                color: C('#7c7c7c')
+            StyledButton:
+                size_hint_x: None
+                size_hint_y: None
+                width: "85dp"
+                height: "30dp"
+                on_press: root.change_mode("bot")
+                BoxLayout:
+                    pos: self.parent.pos
+                    size: self.parent.size
+                    orientation: 'horizontal'
+                    padding:"5dp"
+                    Image:
+                        id: bot_mode_img
+                        source: 'textures/icon_voice.png'
+                        size_hint_x: None
+                        width: "25dp"
+                    Label:
+                        id: bot_mode_label
+                        size_hint_x: None
+                        width: "50dp"
+                        text: "Voice"
+        BoxLayout:
+            id: user_mode_box
+            disabled: False
+            opacity: 1
+            orientation: 'horizontal'
+            size_hint_x: None
+            size_hint_y: None
+            width: "171dp"
+            height: "30dp"
+            Label:
+                text: "User mode:"
+                color: C('#7c7c7c')
+            StyledButton:
+                size_hint_x: None
+                size_hint_y: None
+                width: "85dp"
+                height: "30dp"
+                on_press: root.change_mode("user")
+                BoxLayout:
+                    pos: self.parent.pos
+                    size: self.parent.size
+                    orientation: 'horizontal'
+                    padding:"5dp"
+                    Image:
+                        id: user_mode_img
+                        source: 'textures/icon_voice.png'
+                        size_hint_x: None
+                        width: "25dp"
+                    Label:
+                        id: user_mode_label
+                        size_hint_x: None
+                        width: "50dp"
+                        text: "Voice"
+        BoxLayout:
+            id: settings_box
+            disabled: False
+            opacity: 1
+            orientation: 'horizontal'
+            size_hint_x: None
+            size_hint_y: None
+            width: "171dp"
+            height: "30dp"
+            Label:
+                text: "    Settings:"
+                color: C('#7c7c7c')
+            StyledButton:
+                size_hint_x: None
+                size_hint_y: None
+                width: "85dp"
+                height: "30dp"
+                on_press: root.manager.current = 'settings'
+                BoxLayout:
+                    pos: self.parent.pos
+                    size: self.parent.size
+                    orientation: 'horizontal'
+                    padding:"5dp"
+                    Image:
+                        id: settings_img
+                        source: 'textures/icon_settings.png'
+                        size_hint_x: None
+                        width: "25dp"
+                    Label:
+                        id: settings_label
+                        size_hint_x: None
+                        width: "50dp"
+                        text: "Open"
+    
+    #Center button     
+    AnchorLayout:
+        size_hint: 0.9, 0.6
+        pos_hint: {'center_x': .5, "y":0.4}
+        anchor_y: 'bottom'
+        StyledButton:
+            id: start_btn
+            opacity: 1
+            disabled: False
+            text: "Start"
+            size_hint: 0.3, 0.1
+            on_press: root.start()  
+    
+    #Center textinput       
+    AnchorLayout:
+        size_hint: 0.9, 0.6
+        pos_hint: {'center_x': .5, "y":0.4}
+        anchor_y: 'bottom'
+        TextInput:
+            id: main_text_input
+            opacity: 0
+            disabled: True
+            size_hint: 0.3, 0.1
+            multiline: False
+            hint_text: 'Type here'
+            background_normal: "textures/unpressed_button.png"
+            background_active: 'textures/pressed_button.png'
+            foreground_color: C('#ffffff')
+            cursor_color: C('#ffffff')
+            halign: "center"
+
+    #Bottom one
+    BoxLayout:
+        size_hint: 0.9, 0.25
+        pos_hint: {'center_x': .5, "y":0.05}
+        canvas:
+            Color:
+                rgb: C('#40444B')
+            RoundedRectangle:
+                pos: self.pos
+                size: self.size
+                radius: [(10, 10), (10, 10), (10, 10), (10, 10)]
+        InvisibleTextInput:
+            id: log_text_input
+            hint_text: 'Log will be here.'
+            allow_copy: True
+            readonly: True
+
+
+<SettingsLayout>:
+    size: 720, 576
+    BoxLayout:
+        orientation: 'vertical'
+
+        ScrollView:
+            do_scroll_x: False
+            do_scroll_y: True
+            effect_cls: ScrollEffect
+            GridLayout:
+                cols: 1
+                height: self.minimum_height
+                size_hint_y: None
+                padding: 10
+                spacing: 10
+                row_default_height: 10
+                row_force_default: False
+                canvas:
+                    Color:
+                        rgb: C('40444B')
+                    Rectangle:
+                        pos: self.pos
+                        size: self.size
+                Label:
+                    text: "Voice:"
+                    font_size: '20sp'
+                    size_hint_y: None
+                    height: 50
+                ScrollView:
+                    do_scroll_x: False
+                    do_scroll_y: True
+                    size_hint_x: 1
+                    size_hint_y: None
+                    height: 100
+                    GridLayout:
+                        id: stack_voice
+                        cols: 5
+                        spacing: 10
+                        padding: 10
+                        size_hint_y: None
+                        canvas:
+                            Color:
+                                rgb: C('#232323')
+                            Rectangle:
+                                pos: self.pos
+                                size: self.size
+                Label:
+                    text: "Commands by categories:"
+                    font_size: '20sp'
+                    size_hint_y: None
+                    height: 50
+                Label:
+                    size_hint_y: None
+                    height: self.texture_size[1]
+                    text_size: self.width, None
+                    text: "Music:"
+                ScrollView:
+                    do_scroll_x: False
+                    do_scroll_y: True
+                    size_hint_x: 1
+                    size_hint_y: None
+                    height: 100
+                    GridLayout:
+                        id: stack_music
+                        cols: 5
+                        spacing: 10
+                        padding: 10
+                        size_hint_y: None
+                        canvas:
+                            Color:
+                                rgb: C('#232323')
+                            Rectangle:
+                                pos: self.pos
+                                size: self.size
+                Label:
+                    size_hint_y: None
+                    height: self.texture_size[1]
+                    text_size: self.width, None
+                    text: "Videos:"
+                ScrollView:
+                    do_scroll_x: False
+                    do_scroll_y: True
+                    size_hint_x: 1
+                    size_hint_y: None
+                    height: 100
+                    GridLayout:
+                        id: stack_videos
+                        cols: 5
+                        spacing: 10
+                        padding: 10
+                        size_hint_y: None
+                        canvas:
+                            Color:
+                                rgb: C('#232323')
+                            Rectangle:
+                                pos: self.pos
+                                size: self.size
+                Label:
+                    size_hint_y: None
+                    height: self.texture_size[1]
+                    text_size: self.width, None
+                    text: "Program:"
+                ScrollView:
+                    do_scroll_x: False
+                    do_scroll_y: True
+                    size_hint_x: 1
+                    size_hint_y: None
+                    height: 100
+                    GridLayout:
+                        id: stack_program
+                        cols: 5
+                        spacing: 10
+                        padding: 10
+                        size_hint_y: None
+                        canvas:
+                            Color:
+                                rgb: C('#232323')
+                            Rectangle:
+                                pos: self.pos
+                                size: self.size
+                Label:
+                    size_hint_y: None
+                    height: self.texture_size[1]
+                    text_size: self.width, None
+                    text: "Google:"
+                ScrollView:
+                    do_scroll_x: False
+                    do_scroll_y: True
+                    size_hint_x: 1
+                    size_hint_y: None
+                    height: 100
+                    GridLayout:
+                        id: stack_google
+                        cols: 5
+                        spacing: 10
+                        padding: 10
+                        size_hint_y: None
+                        canvas:
+                            Color:
+                                rgb: C('#232323')
+                            Rectangle:
+                                pos: self.pos
+                                size: self.size
+                Label:
+                    size_hint_y: None
+                    height: self.texture_size[1]
+                    text_size: self.width, None
+                    text: "Wikipedia:"
+                ScrollView:
+                    do_scroll_x: False
+                    do_scroll_y: True
+                    size_hint_x: 1
+                    size_hint_y: None
+                    height: 100
+                    GridLayout:
+                        id: stack_wikipedia
+                        cols: 5
+                        spacing: 10
+                        padding: 10
+                        size_hint_y: None
+                        canvas:
+                            Color:
+                                rgb: C('#232323')
+                            Rectangle:
+                                pos: self.pos
+                                size: self.size
+                Label:
+                    size_hint_y: None
+                    height: self.texture_size[1]
+                    text_size: self.width, None
+                    text: "Exit:"
+                ScrollView:
+                    do_scroll_x: False
+                    do_scroll_y: True
+                    size_hint_x: 1
+                    size_hint_y: None
+                    height: 100
+                    GridLayout:
+                        id: stack_exit
+                        cols: 5
+                        spacing: 10
+                        padding: 10
+                        size_hint_y: None
+                        canvas:
+                            Color:
+                                rgb: C('#232323')
+                            Rectangle:
+                                pos: self.pos
+                                size: self.size
+                Label:
+                    size_hint_y: None
+                    height: self.texture_size[1]
+                    text_size: self.width, None
+                    text: "Calculate:"
+                ScrollView:
+                    do_scroll_x: False
+                    do_scroll_y: True
+                    size_hint_x: 1
+                    size_hint_y: None
+                    height: 100
+                    GridLayout:
+                        id: stack_calculate
+                        cols: 5
+                        spacing: 10
+                        padding: 10
+                        size_hint_y: None
+                        canvas:
+                            Color:
+                                rgb: C('#232323')
+                            Rectangle:
+                                pos: self.pos
+                                size: self.size
+                Label:
+                    size_hint_y: None
+                    height: self.texture_size[1]
+                    text_size: self.width, None
+                    text: "Joke:"
+                ScrollView:
+                    do_scroll_x: False
+                    do_scroll_y: True
+                    size_hint_x: 1
+                    size_hint_y: None
+                    height: 100
+                    GridLayout:
+                        id: stack_joke
+                        cols: 5
+                        spacing: 10
+                        padding: 10
+                        size_hint_y: None
+                        canvas:
+                            Color:
+                                rgb: C('#232323')
+                            Rectangle:
+                                pos: self.pos
+                                size: self.size
+                Label:
+                    size_hint_y: None
+                    height: self.texture_size[1]
+                    text_size: self.width, None
+                    text: "Weather:"
+                ScrollView:
+                    do_scroll_x: False
+                    do_scroll_y: True
+                    size_hint_x: 1
+                    size_hint_y: None
+                    height: 100
+                    GridLayout:
+                        id: stack_weather
+                        cols: 5
+                        spacing: 10
+                        padding: 10
+                        size_hint_y: None
+                        canvas:
+                            Color:
+                                rgb: C('#232323')
+                            Rectangle:
+                                pos: self.pos
+                                size: self.size
+                Label:
+                    text: "Music folders:"
+                    font_size: '20sp'
+                    size_hint_y: None
+                    height: 50
+                ScrollView:
+                    do_scroll_x: False
+                    do_scroll_y: True
+                    size_hint_x: 1
+                    size_hint_y: None
+                    height: 100
+                    GridLayout:
+                        id: stack_music_folders
+                        cols: 5
+                        spacing: 10
+                        padding: 10
+                        size_hint_y: None
+                        canvas:
+                            Color:
+                                rgb: C('#232323')
+                            Rectangle:
+                                pos: self.pos
+                                size: self.size
+                Label:
+                    text: "Videos folders:"
+                    font_size: '20sp'
+                    size_hint_y: None
+                    height: 50
+                ScrollView:
+                    do_scroll_x: False
+                    do_scroll_y: True
+                    size_hint_x: 1
+                    size_hint_y: None
+                    height: 100
+                    GridLayout:
+                        id: stack_videos_folders
+                        cols: 5
+                        spacing: 10
+                        padding: 10
+                        size_hint_y: None
+                        canvas:
+                            Color:
+                                rgb: C('#232323')
+                            Rectangle:
+                                pos: self.pos
+                                size: self.size
+                Label:
+                    text: "Programs:"
+                    font_size: '20sp'
+                    size_hint_y: None
+                    height: 50
+                ScrollView:
+                    do_scroll_x: False
+                    do_scroll_y: True
+                    size_hint_x: 1
+                    size_hint_y: None
+                    height: 100
+                    GridLayout:
+                        id: stack_programs
+                        cols: 5
+                        spacing: 10
+                        padding: 10
+                        size_hint_y: None
+                        canvas:
+                            Color:
+                                rgb: C('#232323')
+                            Rectangle:
+                                pos: self.pos
+                                size: self.size
+        StyledButton:
+            text: 'Back to assistant'
+            on_press: root.manager.current = 'main'
+            size_hint_y: None
+            height: 50
+
+
+<ConfirmationPopupLayout>:
+    orientation: 'vertical'
+    size_hint: 1, 1
+    AnchorLayout:
+        anchor_x: 'center'
+        anchor_y: 'bottom'
+        size_hint: 1, 1
+        Label:
+            id: confirmation_popup_label
+            text: "Are you sure?"
+            font_size: '20sp'
+            text_size: self.width, None
+            size_hint: 0.9, None
+            height: self.texture_size[1]
+            halign: 'center'
+            valign: 'middle'
+    GridLayout:
+        cols: 2
+        rows: 1
+        height: self.minimum_height
+        size_hint_y: None
+        padding: 10
+        spacing: 10
+        StyledButton:
+            id: confirmation_popup_btn_yes
+            text: 'Yes'
+            size_hint: None, None
+            size_hint: 0.5, None
+            height: 50
+        StyledButton:
+            id: confirmation_popup_btn_no
+            text: 'No'
+            size_hint: None, None
+            size_hint: 0.5, None
+            height: 50
+
+
+<PrintPopupLayout>:
+    orientation: 'vertical'
+    size_hint: 1, 1
+    Label:
+        id: print_popup_label
+        text: "What to add?"
+        font_size: '18sp'
+        text_size: self.width, None
+        pos_hint: {"center_x":0.5,"center_y":1}
+        height: self.texture_size[1]
+        halign: 'center'
+        valign: 'middle'
+    TextInput:
+        id: popup_text_input
+        pos_hint: {"center_x":0.5,"center_y":1}
+        multiline: False
+        hint_text: 'Type here'
+        background_normal: "textures/unpressed_button.png"
+        background_active: 'textures/pressed_button.png'
+        foreground_color: C('#ffffff')
+        cursor_color: C('#ffffff')
+        halign: "center"
+        on_text: if len(self.text) >= 50: self.text = self.text[0:49]
+    GridLayout:
+        cols: 2
+        rows: 1
+        height: self.minimum_height
+        size_hint_y: None
+        padding: 10
+        spacing: 10
+        StyledButton:
+            id: print_popup_btn_yes
+            text: 'Ok'
+            size_hint: 0.5, None
+            height: 50
+        StyledButton:
+            id: print_popup_btn_no
+            text: 'Cancel'
+            size_hint: 0.5, None
+            height: 50
+
+
+<ProgramPopupLayout>:
+    orientation: 'vertical'
+    size_hint: 1, 1
+    TextInput:
+        id: popup_program_name_input
+        pos_hint: {"center_x":0.5,"center_y":1}
+        multiline: False
+        hint_text: 'Name'
+        background_normal: "textures/unpressed_button.png"
+        background_active: 'textures/pressed_button.png'
+        foreground_color: C('#ffffff')
+        cursor_color: C('#ffffff')
+        halign: "center"
+        on_text: if len(self.text) >= 50: self.text = self.text[0:49]
+    TextInput:
+        id: popup_program_path_input
+        pos_hint: {"center_x":0.5,"center_y":1}
+        multiline: False
+        hint_text: 'Path'
+        background_normal: "textures/unpressed_button.png"
+        background_active: 'textures/pressed_button.png'
+        foreground_color: C('#ffffff')
+        cursor_color: C('#ffffff')
+        halign: "center"
+        on_text: if len(self.text) >= 150: self.text = self.text[0:149]
+    GridLayout:
+        cols: 2
+        rows: 1
+        height: self.minimum_height
+        size_hint_y: None
+        padding: 10
+        spacing: 10
+        StyledButton:
+            id: print_popup_btn_yes
+            text: 'Ok'
+            size_hint: 0.5, None
+            height: 50
+        StyledButton:
+            id: print_popup_btn_no
+            text: 'Cancel'
+            size_hint: 0.5, None
+            height: 50
+
+
+<ErrorPopupLayout>:
+    orientation: 'vertical'
+    size_hint: 1, 1
+    Label:
+        id: error_label
+        text: "Command already exists or is shorter than 3 characters."
+        font_size: '18sp'
+        text_size: self.width, None
+        pos_hint: {"center_x":0.5,"center_y":1}
+        height: self.texture_size[1]
+        halign: 'center'
+        valign: 'middle'
+    StyledButton:
+        id: error_btn
+        text: 'Ok'
+        size_hint: 1, None
+        height: 50
